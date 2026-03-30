@@ -31,6 +31,9 @@ interface DiagramState {
   updatePort: (nodeId: string, portIndex: number, patch: Partial<Port>) => void;
   addPort: (nodeId: string, port: Port) => void;
   removePort: (nodeId: string, portIndex: number) => void;
+
+  // Agent design
+  applyAgentDesign: (nodes: HardwareNode[], edges: Edge[], replace: boolean) => void;
 }
 
 export const useDiagramStore = create<DiagramState>((set, get) => ({
@@ -94,5 +97,11 @@ export const useDiagramStore = create<DiagramState>((set, get) => ({
         const ports = n.data.ports.filter((_, i) => i !== portIndex);
         return { ...n, data: { ...n.data, ports } };
       }),
+    })),
+
+  applyAgentDesign: (newNodes, newEdges, replace) =>
+    set((state) => ({
+      nodes: replace ? newNodes : [...state.nodes, ...newNodes],
+      edges: replace ? newEdges : [...state.edges, ...newEdges],
     })),
 }));

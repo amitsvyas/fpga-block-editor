@@ -15,13 +15,15 @@ import {
   addEdge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import HardwareNode from "@/components/nodes/HardwareNode";
 import BusEdge from "@/components/edges/BusEdge";
 import NodePalette from "@/components/NodePalette";
 import NodeConfigPanel from "@/components/sidebar/NodeConfigPanel";
 import ExportButton from "@/components/toolbar/ExportButton";
+import AgentPanel from "@/components/agent/AgentPanel";
+import { Sparkles } from "lucide-react";
 import { templateForKind } from "@/lib/nodeTemplates";
 import { makeConnectionValidator, resolveSourcePort } from "@/lib/connectionValidator";
 import { useDiagramStore } from "@/store/diagramStore";
@@ -165,6 +167,8 @@ function FlowCanvas() {
 }
 
 export default function DiagramCanvas() {
+  const [agentOpen, setAgentOpen] = useState(false);
+
   return (
     <div className="flex flex-col h-full w-full">
       {/* Toolbar */}
@@ -183,14 +187,36 @@ export default function DiagramCanvas() {
         <span style={{ fontSize: 11, color: "#52525b", fontFamily: "ui-monospace, monospace", marginRight: "auto" }}>
           Lattice Avant — FPGA Block Editor
         </span>
+        <button
+          onClick={() => setAgentOpen((v) => !v)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "4px 12px",
+            background: agentOpen ? "#1e1e4a" : "none",
+            border: `1px solid ${agentOpen ? "#6366f1" : "#3a3a5c"}`,
+            borderRadius: 4,
+            color: agentOpen ? "#a5b4fc" : "#71717a",
+            fontSize: 11,
+            fontWeight: 600,
+            cursor: "pointer",
+            fontFamily: "ui-monospace, monospace",
+            letterSpacing: "0.04em",
+          }}
+        >
+          <Sparkles size={13} />
+          AI Agent
+        </button>
         <ExportButton />
       </div>
 
       {/* Canvas */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden flex flex-row">
         <ReactFlowProvider>
           <FlowCanvas />
         </ReactFlowProvider>
+        {agentOpen && <AgentPanel onClose={() => setAgentOpen(false)} />}
       </div>
     </div>
   );
